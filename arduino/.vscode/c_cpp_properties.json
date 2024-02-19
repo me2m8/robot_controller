@@ -1,0 +1,51 @@
+{
+    "version": 4,
+    "configurations": [
+        {
+            "name": "Mac",
+            "compilerPath": "/usr/bin/clang++",
+            "compilerArgs": [],
+            "intelliSenseMode": "macos-clang-arm64",
+            "includePath": [
+                "${workspaceFolder}/**/",
+                "/Users/06elbr01/Library/Arduino15/libraries/**"
+            ],
+            "forcedInclude": [],
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "defines": []
+        },
+        {
+            "name": "Arduino",
+            "compilerPath": "/Users/06elbr01/Library/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-g++",
+            "compilerArgs": [
+                "-w",
+                "-std=gnu++11",
+                "-fpermissive",
+                "-fno-exceptions",
+                "-ffunction-sections",
+                "-fdata-sections",
+                "-fno-threadsafe-statics",
+                "-Wno-error=narrowing"
+            ],
+            "intelliSenseMode": "gcc-x64",
+            "includePath": [
+                "/Users/06elbr01/Library/Arduino15/packages/arduino/hardware/avr/1.8.6/cores/arduino",
+                "/Users/06elbr01/Library/Arduino15/packages/arduino/hardware/avr/1.8.6/variants/standard",
+                "/Users/06elbr01/Documents/Arduino/libraries/Servo/src"
+            ],
+            "forcedInclude": [
+                "/Users/06elbr01/Library/Arduino15/packages/arduino/hardware/avr/1.8.6/cores/arduino/Arduino.h"
+            ],
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "defines": [
+                "F_CPU=16000000L",
+                "ARDUINO=10607",
+                "ARDUINO_AVR_UNO",
+                "ARDUINO_ARCH_AVR",
+                "USBCON"
+            ]
+        }
+    ]
+}
