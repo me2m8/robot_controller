@@ -1,10 +1,13 @@
-use serialport::{self, SerialPort};
 use gilrs::{Axis, Gilrs};
+use serialport::{self, SerialPort};
 
 const PORT: &str = "/dev/ttyACM0";
 const BAUD_RATE: u32 = 9600;
 
-const MOVE_SPEED: f64 = 100.0;
+const MOVE_SPEED: f64 = 50.0;
+
+const MAX: u32 = 2400;
+const MIN: u32 = 250;
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -13,6 +16,15 @@ struct Arm {
     pub shoulder: f64,
     pub elbow: f64,
     pub claw: f64,
+}
+
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+struct RawArm {
+    pub base: u16,
+    pub shoulder: u16,
+    pub elbow: u16,
+    pub claw: u16,
 }
 
 impl Default for Arm {
@@ -26,11 +38,24 @@ impl Default for Arm {
     }
 }
 
+impl Arm {
+    fn to_raw(&self) -> RawArm {
+        let delta = MAX - MIN;
+
+        RawArm {
+            base: ((self.base / 180.0) * delta as f64 + MIN as f64) as u16,
+            shoulder: ((self.shoulder / 180.0) * delta as f64 + MIN as f64) as u16,
+            elbow: ((self.elbow / 180.0) * delta as f64 + MIN as f64) as u16,
+            claw: ((self.claw / 180.0) * delta as f64 + MIN as f64) as u16,
+        }
+    }
+}
+
 #[allow(dead_code)]
 struct Connection {
     port: &'static str,
     baud_rate: u32,
-    connection: Box<dyn SerialPort>, 
+    connection: Box<dyn SerialPort>,
 }
 
 fn main() {
@@ -58,7 +83,7 @@ fn main() {
             arm.shoulder = (arm.shoulder + right_axis_y * MOVE_SPEED).clamp(0.0, 180.0);
             arm.elbow = (arm.elbow + left_axis_y * MOVE_SPEED).clamp(0.0, 180.0);
 
-            let data: [u8; 32] = unsafe { std::mem::transmute::<Arm, [u8; 32]>(arm.clone()) };
+            let data: [u8; 8] = unsafe { std::mem::transmute(arm.to_raw()) };
 
             connection.write(&data).unwrap();
         }
@@ -85,12 +110,6 @@ impl Connection {
             message.push(*byte);
         }
 
-        // if (Instant::now() - self.last_write) > Duration::from_millis(10) {
-        //     self.last_write = Instant::now();
-        // } else {
-        //     println!("Ratelimiting ({}s left)", (Instant::now() - self.last_write).as_secs_f32());
-        //     Err(ComError::Ratelimit)
-        // }
         Ok(self.write(message.as_slice())?)
     }
 }
